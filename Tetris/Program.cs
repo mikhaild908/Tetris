@@ -6,8 +6,8 @@ namespace Tetris
     class Program
     {
         #region Constants
-        const ConsoleColor DEFAULT_BACKGROUND_COLOR = ConsoleColor.Black;
-        const ConsoleColor DEFAULT_FOREGROUND_COLOR = ConsoleColor.Green;
+        const ConsoleColor DEFAULT_BACKGROUND_COLOR = ConsoleColor.DarkBlue;
+        const ConsoleColor DEFAULT_FOREGROUND_COLOR = ConsoleColor.White;
         const string BLOCK = "*";
         const string SPACE = " ";
         #endregion
@@ -26,7 +26,6 @@ namespace Tetris
         static void Main(string[] args)
         {
             Initialize();
-
             _currentTetromino = GetRandomTetromino();
 
             ReadKey();
@@ -56,7 +55,7 @@ namespace Tetris
                 _timer = new System.Timers.Timer(1000);
                 _timer.Elapsed += (sender, e) =>
                 {
-                    if (TetrominoCanMove())
+                    if (TetrominoCanMoveDown())
                     {
                         MoveTetrominoDown();
                     }
@@ -194,7 +193,7 @@ namespace Tetris
             DrawTetromino();
         }
 
-        static bool TetrominoCanMove()
+        static bool TetrominoCanMoveDown()
         {
             var rows = _currentTetromino.Matrix.Length;
             var columns = _currentTetromino.Matrix[0].Length;
@@ -213,6 +212,64 @@ namespace Tetris
                     if ((j % 2 == 0) && _currentTetromino.Matrix[i][j / 2])
                     {
                         if (_board[_currentTetromino.Y + i + 1][_currentTetromino.X + j])
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        static bool TetrominoCanMoveToTheLeft()
+        {
+            var rows = _currentTetromino.Matrix.Length;
+            var columns = _currentTetromino.Matrix[0].Length;
+
+            // tetromino is on the left boundary
+            if (_currentTetromino.X <= 0)
+            {
+                return false;
+            }
+
+            // check if Tetromino collides with other blocks
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < 2 * columns; j += 2)
+                {
+                    if ((j % 2 == 0) && _currentTetromino.Matrix[i][j / 2])
+                    {
+                        if (_board[_currentTetromino.Y + i][_currentTetromino.X + j - 2])
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        static bool TetrominoCanMoveToTheRight()
+        {
+            var rows = _currentTetromino.Matrix.Length;
+            var columns = _currentTetromino.Matrix[0].Length;
+
+            // tetromino is on the right boundary
+            if (_currentTetromino.X + 2 * columns  >= _windowWidth)
+            {
+                return false;
+            }
+
+            // check if Tetromino collides with other blocks
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < 2 * columns; j += 2)
+                {
+                    if ((j % 2 == 0) && _currentTetromino.Matrix[i][j / 2])
+                    {
+                        if (_board[_currentTetromino.Y + i][_currentTetromino.X + j + 2])
                         {
                             return false;
                         }
@@ -273,7 +330,7 @@ namespace Tetris
             {
                 while (!_gameOver && (keyInfo = Console.ReadKey(true)).Key != ConsoleKey.Escape)
                 {
-                    if (TetrominoCanMove())
+                    if (TetrominoCanMoveDown())
                     {
                         switch (keyInfo.Key)
                         {
@@ -281,13 +338,19 @@ namespace Tetris
                                 RotateTetromino();
                                 break;
                             case ConsoleKey.RightArrow:
-                                MoveTetrominoRight();
+                                if(TetrominoCanMoveToTheRight())
+                                {
+                                    MoveTetrominoRight();    
+                                }
                                 break;
                             case ConsoleKey.DownArrow:
                                 MoveTetrominoDown();
                                 break;
                             case ConsoleKey.LeftArrow:
-                                MoveTetrominoLeft();
+                                if (TetrominoCanMoveToTheLeft())
+                                {
+                                    MoveTetrominoLeft();
+                                }
                                 break;
                         }
                     }
