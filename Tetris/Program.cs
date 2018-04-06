@@ -20,7 +20,8 @@ namespace Tetris
         static System.Timers.Timer _timer;
         static bool _gameOver = false;
         static Tetromino _currentTetromino;
-        static bool[][] _board;
+        //static bool[][] _board;
+        static Tuple<bool, ConsoleColor>[][] _coloredBoard;
         #endregion
 
         static void Main(string[] args)
@@ -74,15 +75,18 @@ namespace Tetris
 
         static void InitializeBoard()
         {
-            _board = new bool[_windowHeight][];
+            //_board = new bool[_windowHeight][];
+            _coloredBoard = new Tuple<bool, ConsoleColor>[_windowHeight][];
 
             for (int i = 0; i < _windowHeight; i++)
             {
-                _board[i] = new bool[_windowWidth];
+                //_board[i] = new bool[_windowWidth];
+                _coloredBoard[i] = new Tuple<bool, ConsoleColor>[_windowWidth];
 
                 for (int j = 0; j < _windowWidth; j++)
                 {
-                    _board[i][j] = false;
+                    //_board[i][j] = false;
+                    _coloredBoard[i][j] = new Tuple<bool, ConsoleColor>(false, DEFAULT_FOREGROUND_COLOR);
                 }
             }
         }
@@ -98,7 +102,8 @@ namespace Tetris
                 {
                     if ((j % 2 == 0) && _currentTetromino.Matrix[i][j / 2])
                     {
-                        _board[_currentTetromino.Y + i][_currentTetromino.X + j] = true;
+                        //_board[_currentTetromino.Y + i][_currentTetromino.X + j] = true;
+                        _coloredBoard[_currentTetromino.Y + i][_currentTetromino.X + j] = new Tuple<bool, ConsoleColor>(true, GetTetrominoColor());
                     }
                 }
             }
@@ -216,10 +221,14 @@ namespace Tetris
                 {
                     if ((j % 2 == 0) && _currentTetromino.Matrix[i][j / 2])
                     {
-                        if (_board[_currentTetromino.Y + i + 1][_currentTetromino.X + j])
+                        if (_coloredBoard[_currentTetromino.Y + i + 1][_currentTetromino.X + j].Item1)
                         {
                             return false;
                         }
+                        //if (_board[_currentTetromino.Y + i + 1][_currentTetromino.X + j])
+                        //{
+                        //    return false;
+                        //}
                     }
                 }
             }
@@ -245,10 +254,14 @@ namespace Tetris
                 {
                     if ((j % 2 == 0) && _currentTetromino.Matrix[i][j / 2])
                     {
-                        if (_board[_currentTetromino.Y + i][_currentTetromino.X + j - 2])
+                        if (_coloredBoard[_currentTetromino.Y + i][_currentTetromino.X + j - 2].Item1)
                         {
                             return false;
                         }
+                        //if (_board[_currentTetromino.Y + i][_currentTetromino.X + j - 2])
+                        //{
+                        //    return false;
+                        //}
                     }
                 }
             }
@@ -274,10 +287,14 @@ namespace Tetris
                 {
                     if ((j % 2 == 0) && _currentTetromino.Matrix[i][j / 2])
                     {
-                        if (_board[_currentTetromino.Y + i][_currentTetromino.X + j + 2])
+                        if (_coloredBoard[_currentTetromino.Y + i][_currentTetromino.X + j + 2].Item1)
                         {
                             return false;
                         }
+                        //if (_board[_currentTetromino.Y + i][_currentTetromino.X + j + 2])
+                        //{
+                        //    return false;
+                        //}
                     }
                 }
             }
@@ -289,7 +306,7 @@ namespace Tetris
         {
             var random = new Random();
             var index = random.Next(1, 8);
-            Tetromino tetromino;// = new ITetromino();
+            Tetromino tetromino;
 
             switch (index)
             {
