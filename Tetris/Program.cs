@@ -6,7 +6,7 @@ namespace Tetris
     class Program
     {
         #region Constants
-        const ConsoleColor DEFAULT_BACKGROUND_COLOR = ConsoleColor.DarkBlue;
+        const ConsoleColor DEFAULT_BACKGROUND_COLOR = ConsoleColor.Black;
         const ConsoleColor DEFAULT_FOREGROUND_COLOR = ConsoleColor.White;
         const string BLOCK = "*";
         const string SPACE = " ";
@@ -48,9 +48,6 @@ namespace Tetris
                 _windowHeight = Console.WindowHeight;
 
                 InitializeBoard();
-
-                //_currX = _windowWidth / 2;
-                //_currY = _windowHeight;
 
                 _timer = new System.Timers.Timer(1000);
                 _timer.Elapsed += (sender, e) =>
@@ -155,7 +152,15 @@ namespace Tetris
         static void DrawTetromino()
         {
             var rows = _currentTetromino.Matrix.Length;
-            var columns = _currentTetromino.Matrix[0].Length; 
+            var columns = _currentTetromino.Matrix[0].Length;
+
+            // move tetromino to the left if rotation is invalid on the right edge
+            if (_currentTetromino.X + 2 * columns - 1 >= _windowWidth)
+            {
+                _currentTetromino.X = _windowWidth - 2 * columns;
+            }
+
+            // TODO: fix rotation bug on the left side of blocks
 
             for (int i = 0; i < rows; i++)
             {
@@ -163,7 +168,7 @@ namespace Tetris
                 {
                     if ((j % 2 == 0) && _currentTetromino.Matrix[i][j / 2])
                     {
-                        WriteAt(BLOCK, _currentTetromino.X + j, _currentTetromino.Y + i);
+                        WriteAt(BLOCK, _currentTetromino.X + j, _currentTetromino.Y + i, GetTetrominoColor());
                     }
                 }
             }
@@ -322,6 +327,42 @@ namespace Tetris
             return tetromino;
         }
 
+        static ConsoleColor GetTetrominoColor()
+        {
+            var type = _currentTetromino.GetType();
+
+            if (type == typeof(ITetromino))
+            {
+                return ConsoleColor.Red;
+            }
+            else if (type == typeof(JTetromino))
+            {
+                return ConsoleColor.Green;
+            }
+            else if (type == typeof(LTetromino))
+            {
+                return ConsoleColor.Blue;
+            }
+            else if (type == typeof(OTetromino))
+            {
+                return ConsoleColor.Cyan;
+            }
+            else if (type == typeof(STetromino))
+            {
+                return ConsoleColor.Magenta;
+            }
+            else if (type == typeof(TTetromino))
+            {
+                return ConsoleColor.Yellow;
+            }
+            else if (type == typeof(ZTetromino))
+            {
+                return ConsoleColor.Gray;
+            }
+
+            return DEFAULT_FOREGROUND_COLOR;
+        }
+
         static void ReadKey()
         {
             ConsoleKeyInfo keyInfo;
@@ -366,3 +407,5 @@ namespace Tetris
         }
     }
 }
+
+// TODO: limit the width
