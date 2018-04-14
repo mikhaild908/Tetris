@@ -60,7 +60,7 @@ namespace Tetris
                     else
                     {
                         FillBoardWithBlocksFromCurrentTetromino();
-                        // TODO: check if there are rows to be cleared
+                        ClearCompletedRows();
                         _currentTetromino = GetRandomTetromino();
                     }
                 };
@@ -104,6 +104,35 @@ namespace Tetris
                     {
                         //_board[_currentTetromino.Y + i][_currentTetromino.X + j] = true;
                         _coloredBoard[_currentTetromino.Y + i][_currentTetromino.X + j] = new Tuple<bool, ConsoleColor>(true, GetTetrominoColor());
+                    }
+                }
+            }
+        }
+       
+        static void ClearCompletedRows()
+        {
+            var rows = _windowHeight;
+            var columns = _windowWidth;
+
+            for (int i = 0; i < rows; i++)
+            {
+                var rowCanBeCleared = true;
+
+                for (int j = 0; j < columns; j += 2)
+                {
+                    if (_coloredBoard[i][j].Item1 == false)
+                    {
+                        rowCanBeCleared = false;
+                        break;
+                    }
+                }
+
+                if (rowCanBeCleared)
+                {
+                    for (int j = 0; j < columns; j += 2)
+                    { 
+                        WriteAt(SPACE, j, i);
+                        // TODO: shift array
                     }
                 }
             }
