@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 
 namespace Tetris
 {
@@ -20,7 +19,6 @@ namespace Tetris
         static System.Timers.Timer _timer;
         static bool _gameOver = false;
         static Tetromino _currentTetromino;
-        //static bool[][] _board;
         static Tuple<bool, ConsoleColor>[][] _coloredBoard;
         #endregion
 
@@ -75,17 +73,14 @@ namespace Tetris
 
         static void InitializeBoard()
         {
-            //_board = new bool[_windowHeight][];
             _coloredBoard = new Tuple<bool, ConsoleColor>[_windowHeight][];
 
             for (int i = 0; i < _windowHeight; i++)
             {
-                //_board[i] = new bool[_windowWidth];
                 _coloredBoard[i] = new Tuple<bool, ConsoleColor>[_windowWidth];
 
                 for (int j = 0; j < _windowWidth; j++)
                 {
-                    //_board[i][j] = false;
                     _coloredBoard[i][j] = new Tuple<bool, ConsoleColor>(false, DEFAULT_FOREGROUND_COLOR);
                 }
             }
@@ -129,10 +124,41 @@ namespace Tetris
 
                 if (rowCanBeCleared)
                 {
-                    for (int j = 0; j < columns; j += 2)
-                    { 
+                    _timer.Stop();
+
+                    ShiftRows(i);
+                    WriteShiftedRows(i);
+
+                    _timer.Enabled = true;
+                    _timer.Start();
+                }
+            }
+        }
+
+        static void ShiftRows(int clearedRow)
+        {
+            for (int i = clearedRow; i > 0; i--)
+            {
+                for (int j = 0; j < _coloredBoard[0].Length; j++)
+                {
+                    _coloredBoard[i][j] = _coloredBoard[i - 1][j];
+                }
+            }
+        }
+
+        static void WriteShiftedRows(int clearedRow)
+        {
+            for (int i = clearedRow; i > 0; i--)
+            {
+                for (int j = 0; j < _coloredBoard[0].Length; j++)
+                {
+                    if (_coloredBoard[i][j].Item1 == true)
+                    {
+                        WriteAt(BLOCK, j, i, _coloredBoard[i][j].Item2);
+                    }
+                    else
+                    {
                         WriteAt(SPACE, j, i);
-                        // TODO: shift array
                     }
                 }
             }
@@ -454,4 +480,6 @@ namespace Tetris
     }
 }
 
-// TODO: limit the width
+// TODO: limit the width of the playing area
+// TODO: show next tetromino
+// TODO: check two or more rows completed at the same time
