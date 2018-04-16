@@ -97,7 +97,6 @@ namespace Tetris
                 {
                     if ((j % 2 == 0) && _currentTetromino.Matrix[i][j / 2])
                     {
-                        //_board[_currentTetromino.Y + i][_currentTetromino.X + j] = true;
                         _coloredBoard[_currentTetromino.Y + i][_currentTetromino.X + j] = new Tuple<bool, ConsoleColor>(true, GetTetrominoColor());
                     }
                 }
@@ -280,10 +279,6 @@ namespace Tetris
                         {
                             return false;
                         }
-                        //if (_board[_currentTetromino.Y + i + 1][_currentTetromino.X + j])
-                        //{
-                        //    return false;
-                        //}
                     }
                 }
             }
@@ -313,10 +308,6 @@ namespace Tetris
                         {
                             return false;
                         }
-                        //if (_board[_currentTetromino.Y + i][_currentTetromino.X + j - 2])
-                        //{
-                        //    return false;
-                        //}
                     }
                 }
             }
@@ -346,10 +337,6 @@ namespace Tetris
                         {
                             return false;
                         }
-                        //if (_board[_currentTetromino.Y + i][_currentTetromino.X + j + 2])
-                        //{
-                        //    return false;
-                        //}
                     }
                 }
             }
